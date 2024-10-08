@@ -190,20 +190,6 @@ datalad run -m "Evaluate model for ${EXPERIMENT_NAME} with ROC curve plot" \
     "python code/evaluate.py ${EXPERIMENT_NAME}"
 ```
 
-## Creating Branches for Comparison
-
-After evaluating the model, create a branch to save the current state:
-
-```bash
-git checkout -b branch_1
-```
-
-Switch back to the main branch to continue working:
-
-```bash
-git checkout main
-```
-
 ## Modifying Parameters and Re-running
 
 Change the `max_depth` parameter in `config.json`:
@@ -254,12 +240,6 @@ datalad run -m "Evaluate model for ${EXPERIMENT_NAME} with ROC curve plot" \
     --output results/${EXPERIMENT_NAME}/predictions.csv \
     --output results/${EXPERIMENT_NAME}/roc_curve.png \
     "python code/evaluate.py ${EXPERIMENT_NAME}"
-```
-
-Create another branch to save the new state:
-
-```bash
-git checkout -b branch_2
 ```
 
 ## Comparing Results
