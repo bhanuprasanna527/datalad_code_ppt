@@ -1,91 +1,154 @@
-### DataLad Code-Along Demonstration
+# Datalad Diabetes Project
 
-This README provides a guide for demonstrating how to use **DataLad** to manage a machine learning project. The steps will show how to set up a project, track changes, run scripts, and handle multiple experiments efficiently. We will use a Diabetes dataset as an example.
+This README provides a step-by-step guide for setting up and running a Datalad project focused on a diabetes dataset. You'll learn how to manage data and code using Datalad, run scripts, and track changes in a reproducible manner.
 
-#### 1. Install DataLad and Verify Installation
+## Prerequisites
 
-Check that **DataLad** is installed and working:
+- Install [Datalad](https://www.datalad.org/) and ensure it's available in your PATH.
+- Have Python installed to run the scripts.
+- Install the `tree` command for directory visualization (optional).
+
+Verify your Datalad installation:
+
+```bash
+datalad
+```
+
+Check Datalad version:
+
 ```bash
 datalad --version
 ```
 
-#### 2. Initialize the Project Directory
+## Setting Up the Project
 
-Create a new project folder and initialize a **DataLad** repository:
+Create a new directory for the project and initialize it with Datalad using the YODA (YODA's Organized Data Approach) data management practices:
+
 ```bash
 mkdir diabetes
 cd diabetes
 datalad create -c yoda .
 ```
 
-#### 3. Set Up the Project Structure
+View the directory structure:
 
-Create the necessary folder structure for code, data, and results:
+```bash
+tree
+```
+
+## Initializing the Project Structure
+
+Create the necessary directories:
+
 ```bash
 mkdir -p code data/raw data/processed/train data/processed/test results params
 ```
 
-#### 4. Configure Git Attributes
+Configure Git attributes to track certain files with Git instead of Git-annex:
 
-Configure Git and **Git-annex** settings:
 ```bash
 echo 'results/**/* annex.largefiles=nothing' >> .gitattributes
 echo 'params/**/* annex.largefiles=nothing' >> .gitattributes
+```
+
+Save the changes to `.gitattributes`:
+
+```bash
 datalad save -m "Initialize project structure and edit .gitattributes" .gitattributes
 ```
 
-#### 5. Download Python Code Scripts
+View the updated directory structure:
 
-Download the required scripts using **DataLad**:
 ```bash
-datalad run -m "Download download_data.py script" \
-    --output code/download_data.py \
-    "wget https://raw.githubusercontent.com/bhanuprasanna2001/datalad-demo/master/code/download_data.py -O code/download_data.py"
-
-datalad run -m "Download evaluate.py script" \
-    --output code/evaluate.py \
-    "wget https://raw.githubusercontent.com/bhanuprasanna2001/datalad-demo/master/code/evaluate.py -O code/evaluate.py"
-
-datalad run -m "Download process_data.py script" \
-    --output code/process_data.py \
-    "wget https://raw.githubusercontent.com/bhanuprasanna2001/datalad-demo/master/code/process_data.py -O code/process_data.py"
-
-datalad run -m "Download train.py script" \
-    --output code/train.py \
-    "wget https://raw.githubusercontent.com/bhanuprasanna2001/datalad-demo/master/code/train.py -O code/train.py"
+tree
 ```
 
-#### 6. Define Initial Model Parameters
+## Downloading Code Files
 
-Create the configuration file for model parameters:
+Download the necessary Python scripts into the `code` directory:
+
 ```bash
-datalad run -m "Create initial model configuration" \
-    --output params/config.json \
-    "echo '{
-        \"model\": \"DecisionTree\",
-        \"parameters\": {
-            \"criterion\": \"gini\",
-            \"splitter\": \"best\",
-            \"max_depth\": 7,
-            \"min_samples_split\": 2,
-            \"min_samples_leaf\": 1,
-            \"random_state\": 42
-        }
-    }' > params/config.json"
+datalad download-url -O code/ https://raw.githubusercontent.com/bhanuprasanna2001/datalad-demo/master/code/download_data.py -m "Downloaded download_data.py"
 ```
 
-#### 7. Download Data
-
-Run the script to download the Diabetes dataset:
 ```bash
-datalad run -m "Download raw Diabetes dataset" \
-    --output data/raw/diabetes_raw.csv \
+datalad download-url -O code/ https://raw.githubusercontent.com/bhanuprasanna2001/datalad-demo/master/code/evaluate.py -m "Downloaded evaluate.py"
+```
+
+```bash
+datalad download-url -O code/ https://raw.githubusercontent.com/bhanuprasanna2001/datalad-demo/master/code/process_data.py -m "Downloaded process_data.py"
+```
+
+```bash
+datalad download-url -O code/ https://raw.githubusercontent.com/bhanuprasanna2001/datalad-demo/master/code/train.py -m "Downloaded train.py"
+```
+
+View the directory structure with the downloaded code:
+
+```bash
+tree
+```
+
+Check the Git commit log:
+
+```bash
+git log
+```
+
+## Adding Parameter Configurations
+
+Create a `config.json` file with model parameters:
+
+```bash
+echo '{
+    "model": "DecisionTree",
+    "parameters": {
+        "criterion": "gini",
+        "splitter": "best",
+        "max_depth": 7,
+        "min_samples_split": 2,
+        "min_samples_leaf": 1,
+        "random_state": 42
+    }
+}' > params/config.json
+```
+
+## Running the Data Download Script
+
+Attempt to run the data download script:
+
+```bash
+datalad run -m "Run Download Data Script. Add Raw Diabetes Dataset." \
+    --output "data/raw/diabetes_raw.csv" \
     "python code/download_data.py"
 ```
 
-#### 8. Process Raw Data into Training and Test Sets
+**Note:** The above command may fail because there are untracked changes in the `params` folder (`config.json`).
 
-Run the script to split the raw data into training and test sets:
+Save the `config.json` file to track it with Git:
+
+```bash
+datalad save -m "Add parameter configurations" params/config.json
+```
+
+Now, run the data download script again:
+
+```bash
+datalad run -m "Run Download Data Script. Add Raw Diabetes Dataset." \
+    --output "data/raw/diabetes_raw.csv" \
+    "python code/download_data.py"
+```
+
+View the directory structure:
+
+```bash
+tree
+```
+
+## Processing the Data
+
+Process the raw data into training and test sets:
+
 ```bash
 datalad run -m "Process raw data into training and test sets" \
     --input data/raw/diabetes_raw.csv \
@@ -94,12 +157,29 @@ datalad run -m "Process raw data into training and test sets" \
     "python code/process_data.py"
 ```
 
-#### 9. Train the Model
+View the directory structure:
 
-Train the decision tree model using the current configuration:
 ```bash
-EXPERIMENT_NAME="decision_tree_depth_7"
+tree
+```
 
+Check the Git commit log:
+
+```bash
+git log
+```
+
+## Training and Evaluating Models
+
+Set an experiment name:
+
+```bash
+EXPERIMENT_NAME="decision_tree"
+```
+
+Train the Decision Tree model:
+
+```bash
 datalad run -m "Train Decision Tree model for ${EXPERIMENT_NAME}" \
     --input data/processed/train/diabetes_train.csv \
     --input params/config.json \
@@ -107,11 +187,10 @@ datalad run -m "Train Decision Tree model for ${EXPERIMENT_NAME}" \
     "python code/train.py ${EXPERIMENT_NAME}"
 ```
 
-#### 10. Evaluate the Model
+Evaluate the model and generate metrics and plots:
 
-Evaluate the trained model and generate performance metrics:
 ```bash
-datalad run -m "Evaluate Decision Tree model for ${EXPERIMENT_NAME}" \
+datalad run -m "Evaluate model for ${EXPERIMENT_NAME} with ROC curve plot" \
     --input data/processed/test/diabetes_test.csv \
     --input results/${EXPERIMENT_NAME}/model.joblib \
     --output results/${EXPERIMENT_NAME}/metrics.json \
@@ -120,31 +199,53 @@ datalad run -m "Evaluate Decision Tree model for ${EXPERIMENT_NAME}" \
     "python code/evaluate.py ${EXPERIMENT_NAME}"
 ```
 
-#### 11. Modify Model Parameters
+## Creating Branches for Comparison
 
-To experiment with different parameters, modify the configuration file:
+After evaluating the model, create a branch to save the current state:
+
 ```bash
-datalad run -m "Update model configuration to max_depth=5" \
-    --output params/config.json \
-    "echo '{
-        \"model\": \"DecisionTree\",
-        \"parameters\": {
-            \"criterion\": \"gini\",
-            \"splitter\": \"best\",
-            \"max_depth\": 5,
-            \"min_samples_split\": 2,
-            \"min_samples_leaf\": 1,
-            \"random_state\": 42
-        }
-    }' > params/config.json"
+git checkout -b branch_1
 ```
 
-#### 12. Train the Model with New Parameters
+Switch back to the main branch to continue working:
 
-Train the model again with the updated parameters:
 ```bash
-EXPERIMENT_NAME="decision_tree_depth_5"
+git checkout main
+```
 
+## Modifying Parameters and Re-running
+
+Change the `max_depth` parameter in `config.json`:
+
+```bash
+echo '{
+    "model": "DecisionTree",
+    "parameters": {
+        "criterion": "gini",
+        "splitter": "best",
+        "max_depth": 5,
+        "min_samples_split": 2,
+        "min_samples_leaf": 1,
+        "random_state": 42
+    }
+}' > params/config.json
+```
+
+View the directory structure:
+
+```bash
+tree
+```
+
+Save the changes to `config.json`:
+
+```bash
+datalad save -m "Change max_depth in parameters ${EXPERIMENT_NAME}" params/config.json
+```
+
+Re-train the model with the new parameters:
+
+```bash
 datalad run -m "Train Decision Tree model for ${EXPERIMENT_NAME}" \
     --input data/processed/train/diabetes_train.csv \
     --input params/config.json \
@@ -152,11 +253,10 @@ datalad run -m "Train Decision Tree model for ${EXPERIMENT_NAME}" \
     "python code/train.py ${EXPERIMENT_NAME}"
 ```
 
-#### 13. Evaluate the New Model
+Re-evaluate the model:
 
-Evaluate the model with the new parameters and generate metrics:
 ```bash
-datalad run -m "Evaluate Decision Tree model for ${EXPERIMENT_NAME}" \
+datalad run -m "Evaluate model for ${EXPERIMENT_NAME} with ROC curve plot" \
     --input data/processed/test/diabetes_test.csv \
     --input results/${EXPERIMENT_NAME}/model.joblib \
     --output results/${EXPERIMENT_NAME}/metrics.json \
@@ -165,11 +265,22 @@ datalad run -m "Evaluate Decision Tree model for ${EXPERIMENT_NAME}" \
     "python code/evaluate.py ${EXPERIMENT_NAME}"
 ```
 
-#### 14. Compare Results Across Experiments
+Create another branch to save the new state:
 
-Finally, use `git diff` to compare the results from different experiments:
 ```bash
-git diff branch_1 branch_2 -- results/decision_tree_depth_7/metrics.json params/config.json
+git checkout -b branch_2
 ```
 
-This guide demonstrates how **DataLad** can help manage data, code, and experiments for reproducible machine learning workflows.
+## Comparing Results
+
+Compare the metrics and parameters between the two branches:
+
+```bash
+git diff branch_1 branch_2 -- results/${EXPERIMENT_NAME}/metrics.json params/config.json
+```
+
+This command will show the differences in the model metrics and parameter configurations between the two experiments.
+
+---
+
+Follow these steps to replicate the project and understand how Datalad can help manage data and code in a reproducible way. Each command is provided in its own code block for clarity and ease of use during your code-along demonstration.
