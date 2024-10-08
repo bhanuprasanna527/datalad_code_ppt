@@ -69,17 +69,8 @@ Download the necessary Python scripts into the `code` directory:
 
 ```bash
 datalad download-url -O code/ https://raw.githubusercontent.com/bhanuprasanna2001/datalad-demo/master/code/download_data.py -m "Downloaded download_data.py"
-```
-
-```bash
 datalad download-url -O code/ https://raw.githubusercontent.com/bhanuprasanna2001/datalad-demo/master/code/evaluate.py -m "Downloaded evaluate.py"
-```
-
-```bash
 datalad download-url -O code/ https://raw.githubusercontent.com/bhanuprasanna2001/datalad-demo/master/code/process_data.py -m "Downloaded process_data.py"
-```
-
-```bash
 datalad download-url -O code/ https://raw.githubusercontent.com/bhanuprasanna2001/datalad-demo/master/code/train.py -m "Downloaded train.py"
 ```
 
